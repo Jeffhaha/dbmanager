@@ -30,3 +30,5 @@ __pycache__/
 # Environment variables
 .env
 config.py
+flask-session/
+api/config.py
