@@ -1,0 +1,113 @@
+import json
+import sqlite3
+import os
+import sys
+
+SECRET_KEY = ''
+DBCONFIG = 'sqlite'
+CFGDB = 'database_config.db'
+
+def get_db_path():
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.append(parent_dir)
+    db_dir = os.path.join(parent_dir, 'db')
+    os.makedirs(db_dir, exist_ok=True)
+    sqlite_db = os.path.join(db_dir, CFGDB)
+    return sqlite_db
+
+
+
+DATABASES = {
+    'mysql': {
+        'host': 'localhost',
+        'port': 3306,
+        'user': 'root',
+        'password': '',
+        'database': 'test'
+    },
+    'postgresql': {
+        'host': 'localhost',
+        'port': 5432,
+        'user': 'postgres',
+        'password': '',
+        'database': 'test'
+    },
+    'sqlite': {
+        'database': 'test.db'
+    },
+    'mssql': {
+        'host': 'localhost',
+        'port': 1433,
+        'user': 'sa',
+        'password': '',
+        'database': 'test'
+    },
+    'oracle': {
+        'host': 'localhost',
+        'port': 1521,
+        'user': 'system',
+        'password': '',
+        'database': 'xe'
+    },
+    'mongodb': {
+        'host': 'localhost',
+        'port': 27017,
+        'user': '',
+        'password': '',
+        'database': 'test'
+    },
+    'milvus': {
+        'host': 'localhost',
+        'port': 19530,
+        'user': '',
+        'password': '',
+        'database': 'default'
+    }
+}
+
+def save_config_json(config):
+    with open('config.json', 'w') as f:
+        json.dump(config, f, indent=2)
+
+def load_config_json():
+    try:
+        with open('config.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return DATABASES
+
+def load_config_sqlite():
+    try:
+        conn = sqlite3.connect(get_db_path())
+        conn.row_factory = sqlite3.Row  # 这允许我们通过列名访问数据
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT * FROM databases')
+        databases = cursor.fetchall()
+        
+        conn.close()
+    
+        # 将查询结果转换为字典列表
+        result = []
+        for db in databases:
+            db_dict = dict(db)
+            result.append(db_dict)
+        
+        # 返回 JSON 格式的数据
+        return json.dumps(result, indent=2)
+    except Exception as e:
+     return DATABASES
+
+def save_config_sqlite(config):
+    DATABASES[DBCONFIG] = config
+    save_config_json(DATABASES)
+
+if DBCONFIG == 'sqlite':
+    DATABASES = load_config_sqlite()
+else:
+    DATABASES = load_config_json()
+
+
+UPLOAD_FOLDER = 'uploads'
+
