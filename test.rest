@@ -1,0 +1,50 @@
+@url=http://localhost:5000
+@json=Content-Type: application/json
+//@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZTFiNDgwODA0ZTg3NzgwNTU2MWJhNiIsImlhdCI6MTcyNjA5NTAxN30.uxx28NtlFhEEX5RlW42_XlVttYbxYlx8TKWHERngiWk
+
+###
+get {{ url }}/api/database-schema/1 
+
+
+###
+post {{ url }}/api/chat
+{{ json }}
+
+{
+    "message":"I want to know which laws are related to hazardous chemical substance?"
+}
+
+###
+post {{ url }}/hazard/config
+{{ json }}
+
+{
+    "Username": "test1",
+    "Password": "test123"
+}
+
+###
+post {{ url }}/api/upload
+
+
+###
+get {{ url }}/api/files
+
+
+###
+post {{ url }}/logout
+
+###
+get {{ url }}/users
+
+###
+get {{ url }}/profile
+Authorization: Bearer {{ token }}
+
+###
+post {{ url }}/profile
+{{ json }}
+Authorization: Bearer {{ token }}
+{
+    
+}
